@@ -1,0 +1,24 @@
+installation from site, onli for ubuntu 20.04 and 18.04
+in alternativa è possibile utilizzarlo senza installazione locale attraverso l'immagine docker: https://github.com/tylerferrara/argos3-docker
+
+https://www.argos-sim.info/user_manual.php --> example for running argos
+
+
+Running ARGoS for the first time
+
+To test your ARGoS installation, you need to download the examples(https://github.com/ilpincy/argos3-examples). You’ll find a README file that will guide through the features of ARGoS in a tutorial-like fashion.
+
+To test ARGoS, get the examples, compile them and launch the most basic experiment available, diffusion_1.argos:
+
+$ cd argos3-examples                      # go into example dir
+$ mkdir build                             # create build dir
+$ cd build                                # go into build dir
+$ cmake ..                                # setup compilation
+$ make                                    # compile
+$ cd ..                                   # get out of build dir
+$ argos3 -c experiments/diffusion_1.argos # launch experiment
+
+A man page covering ARGoS' command line options is available:
+
+$ man argos3
+
