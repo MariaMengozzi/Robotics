@@ -32,7 +32,7 @@ function step()
 	log("robot.position.x = " .. robot.positioning.position.x)
 	log("robot.position.y = " .. robot.positioning.position.y)
 	log("robot.position.z = " .. robot.positioning.position.z)
-	-- in lua we havent arrays, but we have tables (so dictionaries), int this case we access to the light value with index 1
+	-- in lua we havent arrays, but we have tables (so dictionaries), in this case we access to the light value with index 1
 	light_front = robot.light[1].value + robot.light[24].value
 	log("robot.light_front = " .. light_front)
 	ground = robot.motor_ground --just to save some chars...

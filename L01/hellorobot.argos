@@ -42,9 +42,9 @@
   <!-- * Arena configuration * -->
   <!-- *********************** -->
   <arena size="4, 4, 1" center="0,0,0.5" positional_grid_size="8,8,1">
-	<floor id="f" source="image" path="four_spots.png" /> <!-- we add a patter on the floor -->
+	<floor id="f" source="image" path="four_spots.png" /> <!-- we add a pattern on the floor -->
     <!-- we add walls in order to prevent the simulation to crush, in fact if the robot exit the environment it crash
-    the box can be also movable, in case of walls we want that, so we put movable = false --> 
+    the box can be also movable, in case of walls we don't want that, so we put movable = false --> 
     <box id="bn" size="0.1, 4, 0.2" movable="false">
       <body position="1.9, 0, 0"  orientation="0,0,0" />
     </box>
@@ -66,6 +66,7 @@
            medium="leds"/>
  
     <distribute>
+    <!-- we add some obstacles -->
       <position method="uniform" min="-2,-2,0" max="2,2,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <entity quantity="5" max_trials="100">
@@ -87,7 +88,8 @@
       <position method="uniform" min="-1.9,-1.9,0" max="1.9,1.9,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
       <entity quantity="1" max_trials="100">
-        <foot-bot id="fb"> <!-- if we want different robots we have to have multiple foot-bot, one for each robot -->
+        <foot-bot id="fb"> 
+          <!-- if I want controll each robot with a different behaviour I need to use different controllers eachone with a different id to which then I refer when I associate the controller file -->
           <controller config="lua" />
         </foot-bot>
       </entity>
