@@ -1,8 +1,7 @@
 -- Put your global variables here
 
 MOVE_STEPS = 15
-MAX_VELOCITY = 10
-MEDIUM_VELOCITY = 5
+MAX_VELOCITY = 15
 LIGHT_THRESHOLD = 1.5
 
 n_steps = 0
@@ -32,9 +31,13 @@ function step()
 		left_v = 0
 		right_v = MAX_VELOCITY
 		robot.wheels.set_velocity(left_v, right_v)
+	elseif (robot.light[1].value < robot.light[12].value) then
+		left_v = -MAX_VELOCITY
+		right_v = -MAX_VELOCITY
+		robot.wheels.set_velocity(left_v, right_v)
 	elseif (robot.light[1].value > robot.light[3].value) then
-		left_v = MEDIUM_VELOCITY
-		right_v = MEDIUM_VELOCITY
+		left_v = MAX_VELOCITY
+		right_v = MAX_VELOCITY
 		robot.wheels.set_velocity(left_v, right_v)
 	elseif (robot.light[1].value == 0) or (robot.light[12].value == 0) then
 		left_v = robot.random.uniform(0,MAX_VELOCITY)
