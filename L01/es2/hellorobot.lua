@@ -2,7 +2,7 @@
 
 MOVE_STEPS = 15
 MAX_VELOCITY = 10
-MEDIUM_VELOCITY = 10
+MEDIUM_VELOCITY = 20
 LIGHT_THRESHOLD = 1.5
 
 n_steps = 0
@@ -24,28 +24,42 @@ end
 function step()
 	n_steps = n_steps + 1
 	value = robot.proximity[1].value
-	idx = 1   -- index of the min value
+	idx = 1 
 	for i=2,#robot.proximity do
 		if value < robot.proximity[i].value then
 			idx = i
 			value = robot.proximity[i].value
+			if value == 1 then 
+				log("collisione ", i ) 
+			end
 		end
 	end
+
+	--[[ log("1 ->",robot.proximity[1].value)
+	log("3 ->",robot.proximity[3].value)
+	log("21 ->",robot.proximity[21].value)
+	log("6 ->",robot.proximity[18].value) ]]
+
 	if value == 0 then
 		left_v = robot.random.uniform(0,MAX_VELOCITY)
 		right_v = robot.random.uniform(0,MAX_VELOCITY)
-		robot.wheels.set_velocity(left_v, right_v)
-	else 
-		if idx >=1 or idx <= 12 then 
+	else  
+		if (robot.proximity[6].value > robot.proximity[18].value) or 
+		(robot.proximity[3].value > robot.proximity[21].value) or
+		(idx >= 1 and idx <= 3) then
 			left_v = MAX_VELOCITY
 			right_v = 0
-			robot.wheels.set_velocity(left_v, right_v)
-		elseif idx >=24 or idx <= 13 then 
+		elseif (robot.proximity[6].value < robot.proximity[18].value) or 
+		(robot.proximity[3].value < robot.proximity[21].value) or
+		(idx >= 21 and idx <= 24)then
 			left_v = 0
 			right_v = MAX_VELOCITY
-			robot.wheels.set_velocity(left_v, right_v)
+		else 
+			left_v = -MAX_VELOCITY
+			right_v = MAX_VELOCITY
 		end
 	end
+	robot.wheels.set_velocity(left_v, right_v)
 end
 
 --[[ This function is executed every time you press the 'reset'
