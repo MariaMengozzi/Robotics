@@ -9,7 +9,8 @@
     <system threads="0" />
     <experiment length="0"
                 ticks_per_second="10"
-                random_seed= "10"
+                random_seed = "3"
+                
      />
 <!--    You may want to set the seed of the RNG by: random_seed = "1" (or any n>0) in experiment  -->
 <!-- 		If you don't do this, the RNG is initialised by taking the CPU time -->
@@ -42,8 +43,6 @@
   <!-- * Arena configuration * -->
   <!-- *********************** -->
   <arena size="4, 4, 1" center="0,0,0.5" positional_grid_size="8,8,1">
-    <!-- we add walls in order to prevent the simulation to crush, in fact if the robot exit the environment it crash
-    the box can be also movable, in case of walls we don't want that, so we put movable = false --> 
     <box id="bn" size="0.1, 4, 0.2" movable="false">
       <body position="1.9, 0, 0"  orientation="0,0,0" />
     </box>
@@ -63,7 +62,7 @@
            color="yellow"
            intensity="1"
            medium="leds"/>
- 
+
     <distribute>
     <!-- we add some obstacles -->
       <position method="uniform" min="-2,-2,0" max="2,2,0" />

@@ -22,6 +22,7 @@ end
      It must contain the logic of your controller ]]
 function step()
 	n_steps = n_steps + 1
+
 	value = robot.proximity[1].value
 	idx = 1 
 	for i=2,#robot.proximity do
@@ -34,14 +35,24 @@ function step()
 		end
 	end
 
-	--[[ log("1 ->",robot.proximity[1].value)
-	log("3 ->",robot.proximity[3].value)
-	log("21 ->",robot.proximity[21].value)
-	log("6 ->",robot.proximity[18].value) ]]
-
 	if value == 0 then
-		left_v = robot.random.uniform(0,MAX_VELOCITY)
-		right_v = robot.random.uniform(0,MAX_VELOCITY)
+		-- if no obstacle the behaviour is set in order to reach the light
+		if (robot.light[1].value < robot.light[21].value) or (robot.light[12].value < robot.light[18].value) then
+		left_v = MAX_VELOCITY
+		right_v = 0
+		elseif (robot.light[1].value < robot.light[3].value) or (robot.light[12].value < robot.light[9].value) then
+			left_v = 0
+			right_v = MAX_VELOCITY
+		elseif (robot.light[1].value < robot.light[12].value) then
+			left_v = -MAX_VELOCITY
+			right_v = -MAX_VELOCITY
+		elseif (robot.light[1].value > robot.light[3].value) then
+			left_v = MAX_VELOCITY
+			right_v = MAX_VELOCITY
+		elseif (robot.light[1].value == 0) or (robot.light[12].value == 0) then
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
+			right_v = robot.random.uniform(0,MAX_VELOCITY)
+		end
 	else  
 		if (robot.proximity[6].value > robot.proximity[18].value) or 
 		(robot.proximity[3].value > robot.proximity[21].value) or
@@ -53,12 +64,20 @@ function step()
 		(idx >= 21 and idx <= 24)then
 			left_v = 0
 			right_v = MAX_VELOCITY
+		elseif robot.proximity[1].value == 0 and
+			robot.proximity[6].value == 0 and 
+			robot.proximity[18].value == 0 then
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
+			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		else 
 			left_v = -MAX_VELOCITY
 			right_v = MAX_VELOCITY
 		end
 	end
 	robot.wheels.set_velocity(left_v, right_v)
+
+
+	
 end
 
 --[[ This function is executed every time you press the 'reset'
