@@ -35,7 +35,12 @@ function step()
 		end
 	end
 
-	if value == 0 then
+	if value == 0 or 
+	(robot.proximity[1].value == 0 and 
+	robot.proximity[3].value < 0.01 and 
+	robot.proximity[22].value < 0.01 and
+	robot.proximity[6].value < 0.01 and 
+	robot.proximity[19].value < 0.01) then
 		-- if no obstacle the behaviour is set in order to reach the light
 		if (robot.light[1].value < robot.light[21].value) or (robot.light[12].value < robot.light[18].value) then
 		left_v = MAX_VELOCITY
@@ -44,29 +49,28 @@ function step()
 			left_v = 0
 			right_v = MAX_VELOCITY
 		elseif (robot.light[1].value < robot.light[12].value) then
-			left_v = -MAX_VELOCITY
-			right_v = -MAX_VELOCITY
+			left_v = -robot.random.uniform(0,MAX_VELOCITY)
+			right_v = -robot.random.uniform(0,MAX_VELOCITY)
 		elseif (robot.light[1].value > robot.light[3].value) then
-			left_v = MAX_VELOCITY
+			left_v = -MAX_VELOCITY
 			right_v = MAX_VELOCITY
 		elseif (robot.light[1].value == 0) or (robot.light[12].value == 0) then
 			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		end
-	else  
-		if (robot.proximity[6].value > robot.proximity[18].value) or 
-		(robot.proximity[3].value > robot.proximity[21].value) or
-		(idx >= 1 and idx <= 3) then
-			left_v = MAX_VELOCITY
+	else	
+		if (idx >=1 and idx <= 3) or (idx >=22 and idx <= 24) then
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
+			right_v = -robot.random.uniform(0,MAX_VELOCITY)
+		elseif (robot.proximity[6].value > robot.proximity[19].value) or 
+		(robot.proximity[3].value > robot.proximity[22].value) then
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = 0
-		elseif (robot.proximity[6].value < robot.proximity[18].value) or 
-		(robot.proximity[3].value < robot.proximity[21].value) or
-		(idx >= 21 and idx <= 24)then
+		elseif (robot.proximity[6].value < robot.proximity[19].value) or 
+		(robot.proximity[3].value < robot.proximity[22].value) then
 			left_v = 0
-			right_v = MAX_VELOCITY
-		elseif robot.proximity[1].value == 0 and
-			robot.proximity[6].value == 0 and 
-			robot.proximity[18].value == 0 then
+			right_v = robot.random.uniform(0,MAX_VELOCITY)
+		elseif idx > 7 and idx < 18 then
 			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		else 
@@ -86,10 +90,7 @@ end
      called. The state of sensors and actuators is reset
      automatically by ARGoS. ]]
 function reset()
-	left_v = robot.random.uniform(0,MAX_VELOCITY)
-	right_v = robot.random.uniform(0,MAX_VELOCITY)
-	robot.wheels.set_velocity(left_v,right_v)
-	n_steps = 0
+	n_steps = -1
 end
 
 
@@ -98,4 +99,8 @@ end
      from the simulation ]]
 function destroy()
    -- put your code here
+   x = robot.positioning.position.x
+   y = robot.positioning.position.y
+   d = math.sqrt((0-x)^2 + (0-y)^2)
+   log("distance: "..d)
 end

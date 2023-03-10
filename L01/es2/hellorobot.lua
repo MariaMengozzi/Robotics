@@ -42,17 +42,18 @@ function step()
 	if value == 0 then
 		left_v = robot.random.uniform(0,MAX_VELOCITY)
 		right_v = robot.random.uniform(0,MAX_VELOCITY)
-	else  
-		if (robot.proximity[6].value > robot.proximity[18].value) or 
-		(robot.proximity[3].value > robot.proximity[21].value) or
-		(idx >= 1 and idx <= 3) then
+	else
+		if (robot.proximity[6].value > robot.proximity[19].value) or 
+		(robot.proximity[3].value > robot.proximity[22].value) then
 			left_v = MAX_VELOCITY
 			right_v = 0
-		elseif (robot.proximity[6].value < robot.proximity[18].value) or 
-		(robot.proximity[3].value < robot.proximity[21].value) or
-		(idx >= 21 and idx <= 24)then
+		elseif (robot.proximity[6].value < robot.proximity[19].value) or 
+		(robot.proximity[3].value < robot.proximity[22].value)  then
 			left_v = 0
 			right_v = MAX_VELOCITY
+		elseif idx >= 6 and idx <= 18 then
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
+			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		else 
 			left_v = -MAX_VELOCITY
 			right_v = MAX_VELOCITY
