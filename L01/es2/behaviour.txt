@@ -1,0 +1,2 @@
+Behaviour of the robot:
+The robot if doesn't sense obstacles, or there is enought space for passing between obstacles it performs a random walk, if the obstacle is on the top left arch (sensors 1-6) and no obstacle is detected on right the robot turns right, if it is on the top right arch (sensors 19-24)  and no obstacle is detected on left it turns left, otherwhise it rotates on itself.

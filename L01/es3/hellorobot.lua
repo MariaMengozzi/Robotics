@@ -70,9 +70,6 @@ function step()
 		(robot.proximity[3].value < robot.proximity[22].value) then
 			left_v = 0
 			right_v = robot.random.uniform(0,MAX_VELOCITY)
-		elseif idx > 7 and idx < 18 then
-			left_v = robot.random.uniform(0,MAX_VELOCITY)
-			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		else 
 			left_v = -MAX_VELOCITY
 			right_v = MAX_VELOCITY

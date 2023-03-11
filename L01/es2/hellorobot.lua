@@ -1,14 +1,11 @@
 -- Put your global variables here
 
 MOVE_STEPS = 15
-MAX_VELOCITY = 15
+MAX_VELOCITY = 20
 LIGHT_THRESHOLD = 1.5
 
 n_steps = 0
 
-
---[[ This function is executed every time you press the 'execute'
-     button ]]
 function init()
 	left_v = robot.random.uniform(0,MAX_VELOCITY)
 	right_v = robot.random.uniform(0,MAX_VELOCITY)
@@ -17,9 +14,6 @@ function init()
 end
 
 
-
---[[ This function is executed at each time step
-     It must contain the logic of your controller ]]
 function step()
 	n_steps = n_steps + 1
 	value = robot.proximity[1].value
@@ -39,22 +33,32 @@ function step()
 	log("21 ->",robot.proximity[21].value)
 	log("6 ->",robot.proximity[18].value) ]]
 
-	if value == 0 then
+	if value == 0 or 
+	(robot.proximity[1].value == 0 and 
+	robot.proximity[3].value < 0.01 and 
+	robot.proximity[22].value < 0.01 and
+	robot.proximity[6].value < 0.01 and 
+	robot.proximity[19].value < 0.01) then
+		-- moves randomically
 		left_v = robot.random.uniform(0,MAX_VELOCITY)
 		right_v = robot.random.uniform(0,MAX_VELOCITY)
-	else
-		if (robot.proximity[6].value > robot.proximity[19].value) or 
+	else	
+		if (idx >=1 and idx <= 3) or (idx >=22 and idx <= 24) then
+			-- rotate on itself randomically
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
+			right_v = -robot.random.uniform(0,MAX_VELOCITY)
+		elseif (robot.proximity[6].value > robot.proximity[19].value) or 
 		(robot.proximity[3].value > robot.proximity[22].value) then
-			left_v = MAX_VELOCITY
+			-- turn right
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = 0
 		elseif (robot.proximity[6].value < robot.proximity[19].value) or 
-		(robot.proximity[3].value < robot.proximity[22].value)  then
+		(robot.proximity[3].value < robot.proximity[22].value) then
+			-- turn left
 			left_v = 0
-			right_v = MAX_VELOCITY
-		elseif idx >= 6 and idx <= 18 then
-			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		else 
+			-- rotate on itself
 			left_v = -MAX_VELOCITY
 			right_v = MAX_VELOCITY
 		end
@@ -62,11 +66,6 @@ function step()
 	robot.wheels.set_velocity(left_v, right_v)
 end
 
---[[ This function is executed every time you press the 'reset'
-     button in the GUI. It is supposed to restore the state
-     of the controller to whatever it was right after init() was
-     called. The state of sensors and actuators is reset
-     automatically by ARGoS. ]]
 function reset()
 	left_v = robot.random.uniform(0,MAX_VELOCITY)
 	right_v = robot.random.uniform(0,MAX_VELOCITY)
@@ -75,9 +74,6 @@ function reset()
 end
 
 
-
---[[ This function is executed only once, when the robot is removed
-     from the simulation ]]
 function destroy()
    -- put your code here
 end
