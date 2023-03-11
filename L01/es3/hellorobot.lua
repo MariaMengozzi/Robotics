@@ -37,40 +37,49 @@ function step()
 
 	if value == 0 or 
 	(robot.proximity[1].value == 0 and 
-	robot.proximity[3].value < 0.01 and 
-	robot.proximity[22].value < 0.01 and
-	robot.proximity[6].value < 0.01 and 
-	robot.proximity[19].value < 0.01) then
+	robot.proximity[3].value < 0.001 and 
+	robot.proximity[22].value < 0.001 and
+	robot.proximity[6].value < 0.001 and 
+	robot.proximity[19].value < 0.001) then
 		-- if no obstacle the behaviour is set in order to reach the light
-		if (robot.light[1].value < robot.light[21].value) or (robot.light[12].value < robot.light[18].value) then
-		left_v = MAX_VELOCITY
-		right_v = 0
+	if (robot.light[1].value < robot.light[21].value) or (robot.light[12].value < robot.light[18].value) then
+			-- turn right
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
+			right_v = 0
 		elseif (robot.light[1].value < robot.light[3].value) or (robot.light[12].value < robot.light[9].value) then
+			-- turn left
 			left_v = 0
-			right_v = MAX_VELOCITY
+			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		elseif (robot.light[1].value < robot.light[12].value) then
-			left_v = -robot.random.uniform(0,MAX_VELOCITY)
-			right_v = -robot.random.uniform(0,MAX_VELOCITY)
-		elseif (robot.light[1].value > robot.light[3].value) then
+			-- rotate
 			left_v = -MAX_VELOCITY
 			right_v = MAX_VELOCITY
+		elseif (robot.light[1].value > robot.light[3].value) then
+			-- proceeds in that direction
+			left_v = robot.random.uniform(0,MAX_VELOCITY)
+			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		elseif (robot.light[1].value == 0) or (robot.light[12].value == 0) then
+			-- moves randomically
 			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		end
 	else	
-		if (idx >=1 and idx <= 3) or (idx >=22 and idx <= 24) then
+if (idx >=1 and idx <= 3) or (idx >=22 and idx <= 24) then
+			-- rotate on itself randomically
 			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = -robot.random.uniform(0,MAX_VELOCITY)
 		elseif (robot.proximity[6].value > robot.proximity[19].value) or 
 		(robot.proximity[3].value > robot.proximity[22].value) then
+			-- turn right
 			left_v = robot.random.uniform(0,MAX_VELOCITY)
 			right_v = 0
 		elseif (robot.proximity[6].value < robot.proximity[19].value) or 
 		(robot.proximity[3].value < robot.proximity[22].value) then
+			-- turn left
 			left_v = 0
 			right_v = robot.random.uniform(0,MAX_VELOCITY)
 		else 
+			-- rotate on itself
 			left_v = -MAX_VELOCITY
 			right_v = MAX_VELOCITY
 		end
@@ -98,6 +107,6 @@ function destroy()
    -- put your code here
    x = robot.positioning.position.x
    y = robot.positioning.position.y
-   d = math.sqrt((0-x)^2 + (0-y)^2)
+   d = math.sqrt((1-x)^2 + (1-y)^2)
    log("distance: "..d)
 end
