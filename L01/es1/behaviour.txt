@@ -1,0 +1,2 @@
+Behaviour of the robot:
+The robot turn right or left according to the light position, so if the maximum light value is detected in front of the robot it goes in that direction with the maximum speed. If the light it is on its left it turns left, while if the light it is on its right it turns right. If the the maximum light value is detected on the back of the robot it rotate on itself till it sense the light in front. If it doesn't sense the light it moves randomically.
