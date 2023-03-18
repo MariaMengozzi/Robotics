@@ -1,13 +1,13 @@
-Behaviour of the robot:
-The behaviour of the robot is a mix of the previous ones, so:
+Behavior of the robot:
+The behavior of the robot is a mix of the previous ones, so:
 The robot if doesn't sense obstacles, or there is enought space for passing between obstacles try to reach the light:
 The robot turn right or left according to the light position, so if the maximum light value is detected in front of the robot it goes in that direction with the maximum speed. If the light it is on its left it turns left, while if the light it is on its right it turns right. If the the maximum light value is detected on the back of the robot it rotates on itself till it sense the light in front. If it doesn't sense the light it moves randomically.
 
 While if detect obstacles:
 If the obstacle is on the top left arch (sensors 1-6) and no obstacle is detected on right the robot turns right, if it is on the top right arch (sensors 19-24)  and no obstacle is detected on left it turns left, otherwhise it rotates on itself.
 
-For doing that are individuated 3 level, the first one perform a simple random walk, the second one try to reach the light and the last one perform collision avoidance.
+For doing that were individuated 3 level, the first one perform a simple random walk, the second one try to reach the light and the last one perform collision avoidance.
 
-the flow that I will implement consists in calling the upper level, the obstacles avoidance, this one call the lowe level, phototaxy, and then if it is detected an obstacle, it inhibits the level1 behaviour otherwise maintain that behaviour and pass that to the actuators. The layer1  works in the same way. It ask the behavior to the bottom level, then check if the light is sensed, if this is affermative inhibit the random walk in order to trying to reaching the light, otherwise perform the behaviour of the level below.
+The architecture schematized is shown in the figure attached.
 
-The architecture schematized is shown in the figure.
+The flow that I will implement consists in calling the upper level, the obstacles avoidance, this one call the lower level, phototaxis, and if it is detected an obstacle, it inhibits the level1 behavior otherwise maintain that behavior and pass that to the actuators. The layer1  works in the same way. It ask the behavior to the bottom level, then check if the light is sensed, if this is affermative inhibit the random walk in order to trying to reaching the light, otherwise perform the behaviour of the level below.
