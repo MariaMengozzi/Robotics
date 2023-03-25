@@ -22,8 +22,8 @@
         <differential_steering implementation="default" noise_level="0.01"/>
       </actuators>
       <sensors>
-        <footbot_proximity implementation="default" show_rays="false" noise_level="0.01" />
-        <footbot_light implementation="rot_z_only" show_rays="false" noise_level="0.01" />
+        <footbot_proximity implementation="default" show_rays="true" noise_level="0.01" />
+        <footbot_light implementation="rot_z_only" show_rays="true" noise_level="0.01" />
 				<positioning implementation="default" noise_level="0.0" />
       </sensors>
      <params script="ptoa-subs-bt_v2.lua" />
