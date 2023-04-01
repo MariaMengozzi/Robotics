@@ -1,1 +1,23 @@
-todo: behaviour che calcola in modo indipendente i vettori. per quanto riguarda quello random, quello all'interno della sua funzione va a verificare che gli altri due sensori non abbiano rilevato nulla o comunque con una soglia capisco quano deve intervenire o quando deve essere messo a 0, in questo modo non va a disturbare gli altri. una volta ottenuti tutti i vettori vado a sommarli per ottenere il valore della velocità di SX e DX
+The robot behavior is programmed accordingly to the motor schema architecture; so that each behavior is composed by 2 part:
+- the perception schema in which the get the necessary information from the sensors
+- the motor schema in which is computed the force vector
+
+Now I will describe for each behavior the two parts:
+1- Random walk
+perception schema: it use both light and proximity sensor 
+
+motor schema: if the sensor values are less than a threshold, the robot performs a random walk by choosing a random angle. Otherwise, it should not affect the resulting force vector, and so the force vector would have both components equal to zero
+
+2- Phototaxy
+perception schema: it use light sensor getting the maximum value and its corresponding angle
+
+motor schema: In this scenario, the light exerts an attractive force on the robot. Therefore, the magnitude of the force vector is inversely proportional to the distance between the robot and the light source. Regarding the angle, the robot should turn towards the sensor with the maximum value, so that we can use the angle provided by that sensor.
+
+3- Collision avoidance 
+perception schema: it use proximity sensor getting the maximum value and its corresponding angle
+
+motor schema: In this scenario, the obstacle exerts a repulsive force on the robot. Therefore, the magnitude of the force vector is directly proportional to the distance between the robot and the obstacle. Regarding the angle, the robot should turn with an angle that is the opposite of the angle corresponding to the maximum value. If the angle is positive, we need the corresponding negative angle, so we subtract pi from the angle; otherwise, we add pi to the angle.
+
+
+Considerations
+In some cases, given the nature of the motor schema model, it is possible that a behavior may not be fully respected, in fact, by adding up force vectors, one may prevail over the others. In my case, this mainly happens with obstacle avoidance, so an improvement could be, as suggested in class, to control borderline cases for behaviors and manage them differently, so that it is decided which behavior should actually prevail in each critical situation.
