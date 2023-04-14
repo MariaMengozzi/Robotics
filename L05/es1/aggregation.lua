@@ -1,13 +1,11 @@
 -- Put your global variables here
-local vector = require "vector"
 
-MAXRANGE = 40 --40 cm of radius
+MAXRANGE = 30 --30 cm of radius
 
 MOVE_STEPS = 15
 MAX_VELOCITY = 15
 
 PROX_THRESHOLD = 0.01
-RANDOM_WALK_THRESHOLD = 0.01
 n_steps = 0
 L = robot.wheels.axis_length
 
@@ -57,57 +55,72 @@ function findmax(sensor)
   return value, sensor[idx].angle, idx
 end
 
-
 function random_walk()
-	-- get the vale from the sensors
-	valueOA, angleOA, idxOA = findmax(robot.proximity)
 
-	 -- Motor schema
-    if (valueOA < RANDOM_WALK_THRESHOLD) then
-        -- move random
-        if n_steps % MOVE_STEPS == 0 then
-            randomAngle = robot.random.uniform(-math.pi, math.pi)
-            n_steps = 0
-        end
-        n_steps = n_steps + 1
-        return {length = 1, angle = randomAngle}
-    end
-    
-    return {length = 0.0, angle = 0.0}
+	n_steps = n_steps + 1
+	if n_steps % MOVE_STEPS == 0 then
+		left_v = robot.random.uniform(0,MAX_VELOCITY)
+		right_v = robot.random.uniform(0,MAX_VELOCITY)
+	end
 
+	return limit_velocity(left_v),  limit_velocity(right_v)
 end
 
 
 
 function collision_avoidance()
-	value, proximityAngle, idx = findmax(robot.proximity)
-	return { length = value, angle = (-(proximityAngle/proximityAngle)*math.pi + proximityAngle)  }
+  left_v, right_v = random_walk()
+  prox_value, prox_angle, idx = findmax(robot.proximity)
+
+	if prox_value > PROX_THRESHOLD and prox_angle > 0 and prox_angle <= math.pi/2 then --closest obstacle on front left
+	  left_v = prox_value * MAX_VELOCITY
+		right_v = 0
+		mylock = true
+	elseif prox_value > PROX_THRESHOLD and prox_angle < 0 and prox_angle >= -math.pi/2 then --closest obstacle on fron right
+		left_v = 0
+	  right_v = prox_value * MAX_VELOCITY
+		mylock = true
+	end
+	
+	return limit_velocity(left_v),  limit_velocity(right_v)
 end
 
-function toDifferential(v)
-    return {
-        left = 1 * v.length * MAX_VELOCITY - L / 2 * v.angle,
-        right = 1 * v.length * MAX_VELOCITY + L / 2 * v.angle
-    }
-end
+function aggregate()
+  N = CountRAB()
+  t = robot.random.uniform() -- random number
+  
+  if moving then 
 
-function move()
-  behaviors = {
-        random_walk(),
-        collision_avoidance()
-    }
+    Ps = math.min(PSmax,S+alpha*N)
 
-	sumV = {length = 0.0, angle = 0.0}
+    if t <= Ps then
+      -- send something to signal your presence (not moving) to the other robots
+      robot.range_and_bearing.set_data(1,1)
+      moving = false
+      return 0, 0
+    else
+      -- send something to signal to the other robots that you are moving
+      robot.range_and_bearing.set_data(1,0)
+      moving = true
+      return collision_avoidance()
 
-	for i=1,#behaviors do
-        sumV = vector.vec2_polar_sum(sumV, behaviors[i])
     end
 
-	-- to differential
-	velocities = toDifferential(sumV)
+  else
+    Pw = math.max(PWmin,W-beta*N)
 
-	return limit_velocity(velocities.left), limit_velocity(velocities.right)
-
+    if t <= Pw then
+        -- send something to signal to the other robots that you are moving
+      robot.range_and_bearing.set_data(1,0)
+      moving = true
+      return collision_avoidance()
+    else 
+      -- send something to signal your presence (not moving) to the other robots
+      robot.range_and_bearing.set_data(1,1)
+      moving = false
+      return 0, 0
+    end
+  end
 end
 
 
@@ -125,45 +138,8 @@ end
 --[[ This function is executed at each time step
      It must contain the logic of your controller ]]
 function step()
-  N = CountRAB()
-  t = robot.random.uniform() -- random number
 
-
-  if moving then 
-
-    Ps = math.min(PSmax,S+alpha*N)
-
-    if t <= Ps then
-      -- send something to signal your presence (not moving) to the other robots
-      robot.range_and_bearing.set_data(1,1)
-      left_v = 0
-      right_v = 0
-      moving = false
-    else
-      -- send something to signal to the other robots that you are moving
-    robot.range_and_bearing.set_data(1,0)
-    left_v, right_v = move()
-    moving = true
-    end
-
-  else
-    Pw = math.max(PWmin,W-beta*N)
-
-    if t <= Pw then
-        -- send something to signal to the other robots that you are moving
-      robot.range_and_bearing.set_data(1,0)
-      left_v, right_v = move()
-      moving = true
-    else 
-      -- send something to signal your presence (not moving) to the other robots
-      robot.range_and_bearing.set_data(1,1)
-      left_v = 0
-      right_v = 0
-      moving = false
-    end
-
-  end
-
+  left_v, right_v = aggregate()
 	robot.wheels.set_velocity(left_v,right_v)
 
 end

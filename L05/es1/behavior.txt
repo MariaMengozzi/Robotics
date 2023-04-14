@@ -1,0 +1,3 @@
+it is used a subsumption architecture with at the top level the aggregate, next the collision avoidance and finally, as default behavior the random walk
+
+//TODO
