@@ -1,4 +1,5 @@
 For programming the controller of the robots I used a subsumption architecture with at the top level the aggregate, next the collision avoidance and finally, as default behavior the random walk.
+The aggregate behaviour is extended adding the on spot check, so if the robot is on the spot, and it is moving the probability of stopping is higher than the first exercise of a factor equals to Ds, in this case the value assigned is next to the upper limit; while if the robot is not moving but it is on spot the probability of walking is higher of a factor equals to Dw, that in this case is next to the lower limit, due to we want discurage the walking in favour of stopping on the dot.
 
 As the first exercise, instead, we decide if the robot shoul move or not comparing the probability Ps or Pw with a random number, so we have 2 cases:
 - the robot is still moving, so we have to establish the probability of stopping according to the phormula, and if it is higher than the generated rundom number we stop the robot and notify to the other that now it is stopped, otherwise we perform a collision avoidance or random walk behavior only after notifying that it is moving
