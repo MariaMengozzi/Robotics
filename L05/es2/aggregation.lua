@@ -1,7 +1,7 @@
--- implement with subsumption architecture
+-- implemented with subsumption architecture
 -- Put your global variables here
 
-MAXRANGE = 40 --40 cm of radius
+MAXRANGE = 30 --30 cm of radius
 
 MOVE_STEPS = 15
 MAX_VELOCITY = 15
@@ -58,59 +58,21 @@ function findmax(sensor)
   return value, sensor[idx].angle, idx
 end
 
-function on_spot(lock, velocities)
-  mylock = true
-	myvelocities = {}
-	n_steps = n_steps + 1
-	
-  -- Check if on spot
-  spot = false
-  for i=1,4 do
-    if robot.motor_ground[i].value == 0 then
-      spot = true
-      break
-    end
-  end
+function random_walk()
 
-  if spot == true then
-    left_v = 0
-    right_v = 0
-  end
-  
-
-	myvelocities = {left = limit_velocity(left_v), right = limit_velocity(right_v)}
-	
-	if not lock then
-		return mylock,myvelocities
-	else
-		return lock,velocities
-	end
-end
-
-function random_walk(lock,velocities)
-	mylock = true
-	myvelocities = {}
 	n_steps = n_steps + 1
 	if n_steps % MOVE_STEPS == 0 then
 		left_v = robot.random.uniform(0,MAX_VELOCITY)
 		right_v = robot.random.uniform(0,MAX_VELOCITY)
 	end
 
-	myvelocities = {left = limit_velocity(left_v), right = limit_velocity(right_v)}
-	
-	if not lock then
-		return mylock,myvelocities
-	else
-		return lock,velocities
-	end
+	return limit_velocity(left_v),  limit_velocity(right_v)
 end
 
 
 
-function collision_avoidance(lock, velocities)
-	mylock = false
-	myvelocities = {}
-
+function collision_avoidance()
+  left_v, right_v = random_walk()
   prox_value, prox_angle, idx = findmax(robot.proximity)
 
 	if prox_value > PROX_THRESHOLD and prox_angle > 0 and prox_angle <= math.pi/2 then --closest obstacle on front left
@@ -123,23 +85,61 @@ function collision_avoidance(lock, velocities)
 		mylock = true
 	end
 	
-	myvelocities = {left = limit_velocity(left_v), right = limit_velocity(right_v)}
-	
-	if not lock and mylock then
-		return mylock,myvelocities
-	else
-		return lock,velocities
-	end
+	return limit_velocity(left_v),  limit_velocity(right_v)
 end
 
-function move()
+function aggregate()
+  N = CountRAB()
+  t = robot.random.uniform() -- random number
+  
+  if moving then 
 
-  lock,velocities =	on_spot(random_walk(collision_avoidance(false,{})))
+    Ps = math.min(PSmax,S+alpha*N + Ds * on_spot())
 
-	return limit_velocity(velocities.left), limit_velocity(velocities.right)
+    if t <= Ps then
+      -- send something to signal your presence (not moving) to the other robots
+      robot.range_and_bearing.set_data(1,1)
+      moving = false
+      return 0, 0
+    else
+      -- send something to signal to the other robots that you are moving
+      robot.range_and_bearing.set_data(1,0)
+      moving = true
+      return collision_avoidance()
 
+    end
+
+  else
+    Pw = math.max(PWmin,W-beta*N+ Dw * on_spot())
+
+    if t <= Pw then
+        -- send something to signal to the other robots that you are moving
+      robot.range_and_bearing.set_data(1,0)
+      moving = true
+      return collision_avoidance()
+    else 
+      -- send something to signal your presence (not moving) to the other robots
+      robot.range_and_bearing.set_data(1,1)
+      moving = false
+      return 0, 0
+    end
+  end
 end
 
+function on_spot()
+  -- Check if on spot
+  spot = 0
+  for i=1,4 do
+    if robot.motor_ground[i].value == 0 then
+      spot = 1
+      break
+    end
+  end
+
+  return spot
+
+
+end
 
 --[[ This function is executed every time you press the 'execute'
      button ]]
@@ -155,54 +155,13 @@ end
 --[[ This function is executed at each time step
      It must contain the logic of your controller ]]
 function step()
-  N = CountRAB()
-  t = robot.random.uniform() -- random number
 
-
-  if moving then 
-    D = 0
-    if on_spot() == true then
-      D = Ds
-    end
-
-    Ps = math.min(PSmax,S+alpha*N+D)
-
-    if t <= Ps then
-      -- send something to signal your presence (not moving) to the other robots
-      robot.range_and_bearing.set_data(1,1)
-      left_v = 0
-      right_v = 0
-      moving = false
-    else
-      -- send something to signal to the other robots that you are moving
-      robot.range_and_bearing.set_data(1,0)
-      left_v, right_v = move()
-      moving = true
-    end
-
+  left_v, right_v = aggregate()
+  if moving == true then
+      robot.leds.set_all_colors("green")
   else
-    D = 0
-    if on_spot() then
-      D = Ds
-    end
-
-    Pw = math.max(PWmin,W-beta*N+D)
-
-    if t <= Pw then
-        -- send something to signal to the other robots that you are moving
-      robot.range_and_bearing.set_data(1,0)
-      left_v, right_v = move()
-      moving = true
-    else 
-      -- send something to signal your presence (not moving) to the other robots
-      robot.range_and_bearing.set_data(1,1)
-      left_v = 0
-      right_v = 0
-      moving = false
-    end
-
+    	robot.leds.set_all_colors("red")
   end
-
 	robot.wheels.set_velocity(left_v,right_v)
 
 end
